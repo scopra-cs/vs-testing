@@ -1,21 +1,62 @@
 ﻿namespace Codescene.VSExtension.CodeSmells.Issues.CSharp
 {
-    interface IHttpClient
+    public class UserAccountManager
     {
-        bool Get(string url);
-    }
+        private Dictionary<string, string> userPasswords = new Dictionary<string, string>();
+        private Dictionary<string, string> userEmails = new Dictionary<string, string>();
+        private Dictionary<string, bool> userActivationStatus = new Dictionary<string, bool>();
+        private Dictionary<string, string> userRoles = new Dictionary<string, string>();
 
-    class PrimitiveObsessionExample
-    {
-        private readonly IHttpClient httpClient;
-        private readonly string _baseUrl = string.Empty;
-        public bool Search(string query, int? pages, int? pageSize)
+        public void RegisterUser(string username, string password, string email, string role, bool isActive)
         {
-            return httpClient.Get(string.Format("{0}?q={1}&pages={2}&pageSize={3}",
-                                    _baseUrl,
-                                    query,
-                                    pages ?? 10,
-                                    pageSize ?? 10));
+            userPasswords[username] = password;
+            userEmails[username] = email;
+            userRoles[username] = role;
+            userActivationStatus[username] = isActive;
+        }
+
+        public bool Authenticate(string username, string password)
+        {
+            if (!userPasswords.ContainsKey(username)) return false;
+            return userPasswords[username] == password;
+        }
+
+        public void UpdateEmail(string username, string newEmail)
+        {
+            if (userEmails.ContainsKey(username))
+            {
+                userEmails[username] = newEmail;
+            }
+        }
+
+        public void ChangePassword(string username, string newPassword)
+        {
+            if (userPasswords.ContainsKey(username))
+            {
+                userPasswords[username] = newPassword;
+            }
+        }
+
+        public void AssignRole(string username, string role)
+        {
+            if (userRoles.ContainsKey(username))
+            {
+                userRoles[username] = role;
+            }
+        }
+
+        public void SetActiveStatus(string username, bool isActive)
+        {
+            if (userActivationStatus.ContainsKey(username))
+            {
+                userActivationStatus[username] = isActive;
+            }
+        }
+
+        public string GetUserInfo(string username)
+        {
+            return $"Username: {username}, Email: {userEmails.GetValueOrDefault(username)}, Role: {userRoles.GetValueOrDefault(username)}, Active: {userActivationStatus.GetValueOrDefault(username)}";
         }
     }
+
 }
